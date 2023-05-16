@@ -1,0 +1,152 @@
+<template>
+    <div class="user-profile-edit">
+        <h2>Edit Profile</h2>
+        <form @submit.prevent="submitForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" v-model="form.username" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" v-model="form.name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" v-model="form.email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">New Password</label>
+                <input type="password" id="password" v-model="form.password" required>
+            </div>
+            <div class="form-group">
+                <label for="oldPassword">Old Password</label>
+                <input type="password" id="oldPassword" v-model="form.oldPassword" required>
+            </div>
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+</template>
+  
+<script>
+import axios from "axios";
+var oldpass
+var userId = localStorage.getItem("UserId");
+
+export default {
+    name: "UserProfileEdit",
+    data() {
+        return {
+            form: {
+                username: "",
+                name: "",
+                email: "",
+                password: "",
+                oldPassword: ""
+            }
+        };
+    },
+    mounted() {
+        // Hacer una solicitud GET para obtener los datos del usuario
+        axios.get("http://localhost:1337/api/Users", {
+            params: {
+                filters: {
+                    id: userId
+                }
+            }
+        })
+            .then(response => {
+                const user = response.data[0];
+                // Asignar los datos del usuario a las propiedades del objeto form
+                this.form.username = user.username;
+                this.form.name = user.RealName;
+                this.form.email = user.email;
+                this.form.password = user.password;
+                oldpass = user.password;
+
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    },
+    methods: {
+        submitForm() {
+            // Verificar si la contraseña antigua es igual a la contraseña obtenida de la API
+            if (this.form.oldPassword === oldpass) {
+                const user = {
+                    username: this.form.username,
+                    RealName: this.form.name,
+                    email: this.form.email,
+                    password: this.form.password,
+                    role: 1
+                };
+
+                axios.put(`http://localhost:1337/api/Users/${userId}`, user)
+                    .then(response => {
+                        console.log(response.data);
+                        // Handle successful response
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        // Handle error
+                    });
+            } else {
+                // La contraseña antigua ingresada es incorrecta
+                console.log("La contraseña antigua ingresada es incorrecta");
+            }
+        }
+    }
+
+};
+</script>
+
+  
+<style scoped>
+.user-profile-edit {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+h2 {
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+button[type="submit"] {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+button[type="submit"]:hover {
+    background-color: #0062cc;
+}
+</style>
+  
