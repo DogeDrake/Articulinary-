@@ -15,33 +15,6 @@
             </form>
             <p>No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link></p>
         </div>
-
-        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-            </ol>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img class="d-block w-100" src="https://loremflickr.com/320/240" alt="First slide">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="https://loremflickr.com/320/240/dog" alt="Second slide">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="https://loremflickr.com/320/240/paris" alt="Third slide">
-                </div>
-            </div>
-            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
     </div>
 </template>
 
@@ -87,7 +60,7 @@ export default {
                 console.log(correo + contrasena)
                 let usuarioEncontrado = false;
                 this.users.forEach(user => {
-                    if (user.username === correo && user.password === contrasena) {
+                    if ((user.username === correo || user.email === correo) && user.password === contrasena) {
                         usuarioEncontrado = true;
                         UserIdLogin = user.id
                         console.log(usuarioEncontrado)
@@ -111,22 +84,31 @@ export default {
 
 
 <style>
+
+
 .login-container {
     display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
     overflow-y: hidden;
-    background-color: #F7F7F7;
+    background-color: #ffd0cb;
+
+
 }
 
 .login-form {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     padding: 2rem;
     width: 25%;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
 }
+
 
 .login-form h2 {
     margin-bottom: 1rem;
@@ -181,43 +163,6 @@ export default {
 .login-form p router-link {
     color: #c18e2e;
     text-decoration: underline;
-}
-
-.carousel {
-    width: 75%;
-    margin: auto;
-    margin-left: 3rem;
-}
-
-.carousel-indicators li {
-    background-color: #BDBDBD;
-    border: none;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-
-.carousel-indicators li.active {
-    background-color: #db8310;
-}
-
-.carousel-control-prev,
-.carousel-control-next {
-    width: 5%;
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    background-color: #d68316;
-    border-radius: 50%;
-}
-
-.carousel-control-prev-icon {
-    margin-right: 1rem;
-}
-
-.carousel-control-next-icon {
-    margin-left: 1rem;
 }
 </style>
 

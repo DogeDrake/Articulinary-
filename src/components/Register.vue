@@ -3,49 +3,34 @@
         <div class="register-form">
             <h2>Registro</h2>
             <form>
-                <div>
-                    <label for="email">Email</label>
-                    <input type="email" id="email" v-model="email">
-                </div>
-                <div>
+                <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" v-model="username">
+                    <input type="text" id="username" v-model="username" />
                 </div>
-                <div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" v-model="email" />
+                </div>
+                <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" v-model="password">
+                    <div class="password-input">
+                        <input id="password" v-model="password" :type="showPassword ? 'text' : 'password'" />
+                        <span class="password-toggle" @click="togglePasswordVisibility">
+                            <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="rewrite-password">Rewrite Password</label>
+                    <input type="password" id="rewrite-password" v-model="rewritePassword" />
+                </div>
+                <div class="password-strength-meter">
+                    <div class="strength-bar" :style="{ width: passwordStrength + '%' }" :data-strength="passwordStrength">
+                    </div>
                 </div>
                 <button @click.prevent="register">Registrarse</button>
             </form>
             <p>Ya tienes cuenta? <router-link to="/login">Inicia sesión aquí</router-link></p>
-        </div>
-        <div class="register-carousel">
-            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-                </ol>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img class="d-block w-100" src="https://dummyimage.com/16:9x1080/" alt="First slide">
-                    </div>
-                    <div class="carousel-item">
-                        <img class="d-block w-100" src="https://loremflickr.com/320/240/dog" alt="Second slide">
-                    </div>
-                    <div class="carousel-item">
-                        <img class="d-block w-100" src="https://loremflickr.com/320/240/paris" alt="Third slide">
-                    </div>
-                </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </div>
         </div>
     </div>
 </template>
@@ -56,11 +41,29 @@ export default {
     data() {
         return {
             username: '',
-            email: ''
+            email: '',
+            password: '',
+            rewritePassword: '',
+            showPassword: false
+        }
+    },
+    computed: {
+        passwordStrength() {
+            return this.calculatePasswordStrength(this.password);
         }
     },
     methods: {
         register() {
+            if (this.password !== this.rewritePassword) {
+                alert("Las contraseñas no coinciden.");
+                return;
+            }
+
+            if (!this.isPasswordValid(this.password)) {
+                alert("La contraseña debe tener al menos una mayúscula, una minúscula, un número y ser de al menos 8 caracteres.");
+                return;
+            }
+
             const data = {
                 username: this.username,
                 email: this.email,
@@ -71,43 +74,60 @@ export default {
             axios.post('http://localhost:1337/api/Users', data)
                 .then(response => {
                     console.log(response.data);
-                    this.$router.push({ name: 'Login' })
+                    this.$router.push({ name: 'Login' });
                     // Aquí puedes agregar la redirección a la pantalla de Login si el registro es exitoso
                 })
                 .catch(error => {
                     console.log(error.response.data);
                 });
+        },
+        isPasswordValid(password) {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            return passwordRegex.test(password);
+        },
+        calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.match(/[a-z]/)) {
+                strength +=
+                    25;
+            }
+            if (password.match(/[A-Z]/)) {
+                strength += 25;
+            }
+            if (password.match(/\d/)) {
+                strength += 25;
+            }
+            if (password.length >= 8) {
+                strength += 25;
+            }
+            return strength;
+        },
+        togglePasswordVisibility() {
+            this.showPassword = !this.showPassword;
         }
     }
 }
-
 </script>
-
-
 <style>
 .register-container {
     display: flex;
     align-items: center;
+    justify-content: center;
     height: 100vh;
+    background-color: #cbe3ff;
 }
 
 .register-form {
-    flex: 1;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     width: 25%;
-    margin: 0 auto;
-    height: 100%;
-    padding-top: 15%;
 }
-
-
 
 .register-form h2 {
     font-size: 2rem;
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 20px;
 }
 
@@ -117,30 +137,35 @@ export default {
     gap: 10px;
 }
 
+.register-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
 .register-form label {
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .register-form input {
     padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    border-radius: 4px;
+    border: 2px solid #bdbdbd;
     font-size: 16px;
 }
 
 .register-form button {
-    background-color: #0077FF;
+    background-color: rgb(115, 115, 255);
     color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .register-form button:hover {
-    background-color: #005FE6;
+    background-color: blue;
 }
 
 .register-form p {
@@ -150,7 +175,7 @@ export default {
 }
 
 .register-form p a {
-    color: #0077FF;
+    color: #c18e2e;
     text-decoration: none;
 }
 
@@ -158,38 +183,56 @@ export default {
     text-decoration: underline;
 }
 
-.register-carousel {
-    flex: 3;
-    width: 75%;
-}
-
-.carousel-item img {
-    height: 300px;
-    object-fit: cover;
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    background-color: #0077FF;
-    border-radius: 50%;
-    padding: 5px;
-    color: white;
-    transition: background-color 0.3s ease;
-}
-
-.carousel-control-prev-icon:hover,
-.carousel-control-next-icon:hover {
-    background-color: #005FE6;
-}
-
-.carousel-indicators li {
-    background-color: #ccc;
-    border-radius: 50%;
-    width: 10px;
+.password-strength-meter {
+    width: 100%;
     height: 10px;
+    background-color: #eee;
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
-.carousel-indicators .active {
-    background-color: #0077FF;
+.strength-bar {
+    height:
+        100%;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+/* Colors for password strength levels */
+.strength-bar {
+    background-color: #ff4d4d;
+}
+
+.strength-bar[data-strength="25"] {
+    background-color: #ff4d4d;
+}
+
+.strength-bar[data-strength="50"] {
+    background-color: #ffcc66;
+}
+
+.strength-bar[data-strength="75"] {
+    background-color: #66ccff;
+}
+
+.strength-bar[data-strength="100"] {
+    background-color: #66ff66;
+}
+
+.password-input {
+    position: relative;
+}
+
+.password-input input {
+    padding-right: 55%;
+    /* Ajusta el espacio para el ícono */
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
 }
 </style>
