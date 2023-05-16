@@ -1,22 +1,20 @@
 <template>
     <div>
-        <div class="HomePage-search-container" v-if="isHome">
-            <div class="HomePage-search-wrapper">
-                <input type="text" v-model="searchTerm" placeholder="Buscar..." class="HomePage-search-input" />
-                <button @click="search" class="HomePage-search-button">Buscar</button>
+        <div class="Favoritos-search-container" v-if="isHome">
+            <div class="Favoritos-search-wrapper">
+                <input type="text" v-model="searchTerm" placeholder="Buscar..." class="Favoritos-search-input" />
+                <button @click="search" class="Favoritos-search-button">Buscar</button>
             </div>
         </div>
         <div v-for="receta in recetasFiltradas" :key="receta.id">
             <router-link :to="{ name: 'UserDetails', params: { id: receta.id } }">
-                <div class="HomePage-cardMain">
-                    <div class="HomePage-card-content">
-                        <h2 class="HomePage-title">{{ receta.attributes.Titulo }}</h2>
+                <div class="Favoritos-cardMain">
+                    <div class="Favoritos-card-content">
+                        <h2 class="Favoritos-title">{{ receta.attributes.Titulo }}</h2>
                         <p>{{ receta.attributes.LikesID }}</p>
-                        <p class="HomePage-username">
-                            {{ receta.attributes.user.data.attributes.username }}
-                        </p>
+                        <p class="Favoritos-username">{{ receta.attributes.user.data.attributes.username }}</p>
                     </div>
-                    <div class="HomePage-card-image">
+                    <div class="Favoritos-card-image">
                         <img :src="receta.attributes.Imagen" alt="Imagen de la receta" />
                     </div>
                 </div>
@@ -81,21 +79,14 @@ export default {
 };
 </script>
   
-
-
 <style>
-.HomePage {
-    background-color: #FFA07A;
-    padding: 50px 0;
-}
-
-.HomePage-search-container {
+.Favoritos-search-container {
     display: flex;
     justify-content: center;
     margin: 50px 0;
 }
 
-.HomePage-search-wrapper {
+.Favoritos-search-wrapper {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -106,17 +97,17 @@ export default {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-.HomePage-search-input {
+.Favoritos-search-input {
     border: none;
     outline: none;
     background: transparent;
     font-size: 16px;
-    width: 600px;
+    width: 100%;
     margin-right: 10px;
 }
 
-.HomePage-search-button {
-    background-color: #4CAF50;
+.Favoritos-search-button {
+    background-color: #4caf50;
     color: white;
     border: none;
     border-radius: 25px;
@@ -125,7 +116,7 @@ export default {
     cursor: pointer;
 }
 
-.HomePage-cardMain {
+.Favoritos-cardMain {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -139,31 +130,31 @@ export default {
     transition: transform 0.3s ease-in-out;
 }
 
-.HomePage-cardMain:hover {
+.Favoritos-cardMain:hover {
     transform: scale(1.02);
 }
 
-.HomePage-card-content {
+.Favoritos-card-content {
     padding: 10px;
 }
 
-.HomePage-title {
+.Favoritos-title {
     font-size: 24px;
     margin: 0;
 }
 
-.HomePage-username {
+.Favoritos-username {
     margin: 5px 0 0;
     font-size: 14px;
     color: #808080;
 }
 
-.HomePage-card-image {
+.Favoritos-card-image {
     height: 300px;
     overflow: hidden;
 }
 
-.HomePage-card-image img {
+.Favoritos-card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;

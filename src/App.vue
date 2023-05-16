@@ -37,10 +37,6 @@ export default {
 
 <style>
 
-body{
-  background-color: salmon;
-}
-
 
 .app-header {
   display: flex;

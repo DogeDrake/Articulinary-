@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="HomePage">
         <div class="HomePage-search-container" v-if="isHome">
             <div class="HomePage-search-wrapper">
                 <input type="text" v-model="searchTerm" placeholder="Buscar..." class="HomePage-search-input" />
@@ -21,6 +21,8 @@
         </div>
     </div>
 </template>
+
+
 
 <script>
 import axios from 'axios'
@@ -70,7 +72,7 @@ export default {
 
 <style>
 .HomePage {
-    background-color: #FFA07A;
+    background-color: #ffd0cb;
     padding: 50px 0;
 }
 
@@ -101,7 +103,7 @@ export default {
 }
 
 .HomePage-search-button {
-    background-color: #4CAF50;
+    background-color: #4caf50;
     color: white;
     border: none;
     border-radius: 25px;

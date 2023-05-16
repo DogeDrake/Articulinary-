@@ -1,33 +1,42 @@
 <template>
-    <div class="container">
-        <h2>{{ userId }}</h2>
-        <div v-for="receta in recetas" :key="receta.id">
-            <h1 class="card-orange">{{ receta.attributes.Titulo }}</h1>
+    <div class="card-container">
+        <div v-for="receta in recetas" :key="receta.id" class="card">
+            <div class="card-header">
+                <h1 class="card-title">{{ receta.attributes.Titulo }}</h1>
+                <button @click="toggleLike(receta.id)" class="card-heart-button">
+                    <span v-if="isLiked(receta.id)">
+                        <i class="fas fa-heart card-icon-large" style="color: #ff0000;"></i>
+                    </span>
+                    <span v-else>
+                        <i class="far fa-heart card-icon-large"></i>
+                    </span>
+                </button>
+            </div>
             <p>{{ receta.attributes.user.data.attributes.username }}</p>
-            <div style="display: flex; align-items: center; justify-content: center;">
-                <p style="margin-right: 1rem">{{ receta.attributes.Gente + " Personas" }}</p>
-                <p style="margin-left: 1rem">{{ receta.attributes.Tiempo + " º" }}</p>
+            <div class="card-details">
+                <div class="card-column">
+                    <div>
+                        <h2>Ingredientes</h2>
+                        <pre class="card-detail">{{ receta.attributes.IngredientesTexto }}</pre>
+                    </div>
+                    <div>
+                        <h2>Pasos</h2>
+                        <pre class="card-detail">{{ receta.attributes.PasosTexto }}</pre>
+                    </div>
+                </div>
+                <div class="card-column">
+                    <div class="card-image">
+                        <img :src="receta.attributes.Imagen" alt="Imagen de la receta" />
+                    </div>
+                </div>
             </div>
-            <div>
-                <h2> Ingredientes </h2>
-                <pre class="cardDetail">{{ receta.attributes.IngredientesTexto }}</pre>
-            </div>
-            <div>
-                <h2> Pasos </h2>
-                <pre class="cardDetail">{{ receta.attributes.PasosTexto }}</pre>
-            </div>
-            <button @click="toggleLike(receta.id)">
-                {{ isLiked(receta.id) ? 'Desmarcar' : 'Marcar' }}
-            </button>
             <router-link to="/home">Volver a Home</router-link>
         </div>
     </div>
 </template>
-  
 <script>
 import axios from 'axios'
 var userIdLogin = localStorage.getItem("UserId");
-
 
 export default {
     data() {
@@ -47,10 +56,12 @@ export default {
                 this.unlikePost(postId);
                 this.getRecipe(postId, () => {
                     this.desgustar(postId);
+                    this.getRecipe(postId);
                 });
             } else {
                 this.likePost(postId);
                 this.gustar(postId);
+                this.getRecipe(postId);
             }
         },
         likePost(postId) {
@@ -65,13 +76,17 @@ export default {
             }
         },
         isLiked(postId) {
-            // Verificar si la publicación ha sido marcada como 'liked'
-            return this.likedPosts.includes(postId)
+            const likedVarString = this.LikedVar;
+            if (likedVarString) {
+                const likedVarArray = likedVarString.split(",").map(Number);
+                return likedVarArray.includes(Number(userIdLogin));
+            }
+            return false;
         },
         gustar(postId) {
             var likedVarString = this.LikedVar;
             console.log(likedVarString)
-            if (likedVarString !== null) {
+            if (likedVarString !== "") {
                 console.log("Entra en el IF")
                 var likedVarArray = likedVarString.split(",").map(Number);
                 var uniqueLikedVarArray = Array.from(new Set(likedVarArray));
@@ -101,12 +116,12 @@ export default {
                 });
         },
         desgustar(postId) {
-            console.log("Desgustar marcado , llegan datos: "+ this.LikedVar)
+            console.log("Desgustar marcado , llegan datos: " + this.LikedVar)
             var likedVarString = this.LikedVar;
             var likedVarArray = likedVarString.split(",").map(Number);
             var uniqueLikedVarArray = Array.from(new Set(likedVarArray));
             console.log("Los datos que se van a purgar son: " + uniqueLikedVarArray)
-            console.log("El dato que los va a purgar es:" + userIdLogin )
+            console.log("El dato que los va a purgar es:" + userIdLogin)
             var updatedArray = uniqueLikedVarArray.filter(function (number) {
                 return number !== Number(userIdLogin);
             });
@@ -115,7 +130,7 @@ export default {
 
             console.log("Datos que se mandan a la API: " + likedVarString)
 
-            
+
             const data = {
                 LikesID: likedVarString,
             };
@@ -161,83 +176,79 @@ export default {
 </script>
   
 
-<style >
-/* ESTILOS ANDROID STUDIO*/
-/* Estilos generales */
-
+<style>
 html {
     font-family: 'Roboto', sans-serif;
-    background-color: #FFD0CB;
+    background-color: #ffd0cb;
+    text-decoration: none;
 }
 
-.container {
-    background-color: #FFD0CB;
+.card-container {
+    background-color: #ffd0cb;
     padding: 10px;
     box-sizing: border-box;
 }
 
-/* Estilos del texto */
-.text-center {
-    text-align: center;
-}
-
-.text-black {
-    color: black;
-}
-
-.text-bold {
-    font-weight: bold;
-}
-
-.text-medium {
-    font-size: 20px;
-}
-
-.text-large {
-    font-size: 30px;
-}
-
-/* Estilos del LinearLayout */
-.flex-column {
-    flex-direction: column;
-}
-
-/* Estilos del CardView */
-.cardDetail {
-    border-radius: 5px;
-    margin: 20px;
-    overflow: hidden;
+.card {
     background-color: white;
-    width: 50%;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    margin: 0;
+    margin-right: 1rem;
+}
+
+.card-heart-button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+
+.card-icon-large {
+    font-size: 50px;
+}
+
+.card-details {
+    display: flex;
+    margin-top: 1rem;
+}
+
+.card-column {
+    flex-basis: 50%;
+}
+
+.card-image {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.card-image img {
+    max-width: 90%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.card-detail {
+    border-radius: 5px;
     white-space: pre-wrap;
-    height: 80%;
     line-height: 25px;
     padding: 20px;
+    background-color: #ffd0cb;
 }
 
-.card-orange {
-    background-color: #FFBAB3;
-}
-
-/* Estilos del NestedScrollView */
-.scroll {
-    overflow-y: scroll;
-}
-
-/* Estilos del CoordinatorLayout */
-.fill {
-    height: 100%;
-}
-
-/* Estilos del LinearLayout dentro del CardView */
-.wrap {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 20px;
-}
-
-.wrap p {
-    line-height: 20px;
+.router-link {
+    color: blue;
 }
 </style>
