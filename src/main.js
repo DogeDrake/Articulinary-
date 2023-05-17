@@ -12,13 +12,10 @@ import UserEdit from "./components/UserEdit.vue";
 import Favoritos from "./components/Favoritos.vue";
 import Buscar from "./components/Buscar.vue";
 import store from "./store";
-
 /* import the fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
-
 /* import font awesome icon component */
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
 /* import specific icons */
 import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
@@ -26,9 +23,6 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 /* add icons to the library */
 library.add(faUserSecret);
 library.add(faHeart);
-
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
 
 const routes = [
   {
@@ -85,17 +79,6 @@ const routes = [
   },
 ];
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBpeTh-1wzEmBuf3S5L_HVpbX4b0naWfGk",
-  authDomain: "articullinary.firebaseapp.com",
-  databaseURL:
-    "https://articullinary-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "articullinary",
-  storageBucket: "articullinary.appspot.com",
-  messagingSenderId: "936030800031",
-  appId: "1:936030800031:web:a20da356473816408d7aaa",
-};
-
 const router = createRouter({
   history: createWebHistory(),
   routes,
@@ -114,11 +97,6 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
-//const app = firebase.initializeApp(firebaseConfig);
-//const db = getFirestore(app);
-
-//export { app }
 
 router.push("/login");
 

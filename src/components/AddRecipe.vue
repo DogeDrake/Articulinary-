@@ -39,11 +39,9 @@
             </div>
             <div class="upload-form-group">
                 <label for="image">Imagen</label>
-                <input type="file" id="image" @change="uploadImage">
+                <input type="file" id="image" ref="myimage" @change="uploadImage($event)">
+                <!--<button @click="uploadImage">subir imagen</button>-->
             </div>
-
-
-
 
             <div class="upload-form-group">
                 <button class="upload-toggle-button" type="button" @click="toggleDropdown">
@@ -83,6 +81,9 @@
 <script>
 import axios from 'axios';
 var userIdLogin = localStorage.getItem("UserId");
+import { storage } from "../firebase";
+import { ref, uploadBytes, getDownloadURL  } from "firebase/storage"
+
 export default {
     data() {
         return {
@@ -93,7 +94,7 @@ export default {
                 ingredients: [],
                 procedures: [],
                 image: null,
-                imageUrl: null, // Referencia de la imagen en Firebase
+                imageUrl: '', // Referencia de la imagen en Firebase
                 IsVegano: false,
                 IsVegetariano: false,
                 IsSinGluten: false,
@@ -117,23 +118,22 @@ export default {
         removeProcedure(index) {
             this.recipe.procedures.splice(index, 1);
         },
-        async uploadImage(event) {
-            var file = event.target.files[0];
-            // Subir imagen a Firebase
-            this.storageRef = app.storage().ref(`images/${file.name}`);
-            await this.storageRef.put(file);
-            // Obtener la referencia de la imagen en Firebase
-            const url = await this.storageRef.getDownloadURL();
-            this.recipe.imageUrl = url;
-            // Guardar la imagen en la propiedad de la receta
-            var reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                this.recipe.image = reader.result;
-            };
-            reader.onerror = (error) => {
-                console.log(error);
-            };
+        uploadImage() {
+            const file = this.$refs.myimage.files[0];
+            const storageRef = ref(storage, `notes/images/${file.name}`);
+
+            uploadBytes(storageRef, file)
+                .then((snapshot) => {
+                    return getDownloadURL(snapshot.ref);
+                })
+                .then((url) => {
+                    console.log("URL de la imagen:", url);
+                    // Guardar la URL en la propiedad de la receta o en la base de datos
+                    this.recipe.imageUrl = url;
+                })
+                .catch((error) => {
+                    console.log("Error al subir la imagen:", error);
+                });
         },
         submitForm() {
             let proceduresStr = '';
