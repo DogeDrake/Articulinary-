@@ -2,7 +2,7 @@
     <div class="card-container">
         <div v-for="receta in recetas" :key="receta.id" class="card">
             <div class="card-header">
-                <h1 class="card-title">{{ receta.attributes.Titulo }}</h1>
+                <h1 class="card-title">{{ receta.attributes.Titulo }} - En {{ receta.attributes.Tiempo }} min - Para {{ receta.attributes.Gente }} personas</h1>
                 <button @click="toggleLike(receta.id)" class="card-heart-button">
                     <span v-if="isLiked(receta.id)">
                         <i class="fas fa-heart card-icon-large" style="color: #ff0000;"></i>
@@ -86,7 +86,7 @@ export default {
         gustar(postId) {
             var likedVarString = this.LikedVar;
             console.log(likedVarString)
-            if (likedVarString !== "") {
+            if (likedVarString !== null) {
                 console.log("Entra en el IF")
                 var likedVarArray = likedVarString.split(",").map(Number);
                 var uniqueLikedVarArray = Array.from(new Set(likedVarArray));

@@ -36,7 +36,9 @@ export default {
 </script>
 
 <style>
-
+.custom-link {
+  text-decoration: none;
+}
 
 .app-header {
   display: flex;

@@ -6,13 +6,15 @@
                 <label for="title">Título</label>
                 <input type="text" id="title" v-model="recipe.title" required>
             </div>
-            <div class="upload-form-group">
-                <label for="people">Personas</label>
-                <input type="number" id="people" v-model="recipe.people" required>
-            </div>
-            <div class="upload-form-group">
-                <label for="time">Tiempo de cocinado (min)</label>
-                <input type="number" id="time" v-model="recipe.time" required>
+            <div class="upload-form-group upload-inline-group">
+                <div>
+                    <label for="people">Personas</label>
+                    <input type="number" id="people" v-model="recipe.people" required>
+                </div>
+                <div>
+                    <label for="time">Tiempo de cocinado (min)</label>
+                    <input type="number" id="time" v-model="recipe.time" required>
+                </div>
             </div>
             <div class="upload-form-group">
                 <label>Ingredientes</label>
@@ -39,20 +41,48 @@
                 <label for="image">Imagen</label>
                 <input type="file" id="image" @change="uploadImage">
             </div>
+
+
+
+
+            <div class="upload-form-group">
+                <button class="upload-toggle-button" type="button" @click="toggleDropdown">
+                    <label class=" upload-toggle-block">Contenido Extra</label>
+                    <span class="upload-toggle-icon" :class="{ open: dropdownOpen }"></span>
+                </button>
+                <transition name="fade">
+                    <div class="upload-dropdown" v-if="dropdownOpen">
+
+                        <label>
+                            <input type="checkbox" v-model="recipe.IsVegano" value="Vegano">
+                            Vegano
+                        </label>
+                        <label>
+                            <input type="checkbox" v-model="recipe.IsVegetariano" value="Vegetariano">
+                            Vegetariano
+                        </label>
+                        <label>
+                            <input type="checkbox" v-model="recipe.IsSinGluten" value="Sin Gluten">
+                            Sin Gluten
+                        </label>
+                        <label>
+                            <input type="checkbox" v-model="recipe.IsSinLactosa" value="Sin Lactosa">
+                            Sin Lactosa
+                        </label>
+                        <label>
+                            <input type="checkbox" v-model="recipe.IsBajoEnAzucar" value="Bajo en Azúcar">
+                            Bajo en Azúcar
+                        </label>
+                    </div>
+                </transition>
+            </div>
             <button class="upload-button" type="submit">Enviar</button>
         </form>
     </div>
 </template>
-
 <script>
-import axios from 'axios'
-import 'firebase/auth';
-//import { app } from '../main.js'
-import 'firebase/storage';
-
-var userId = localStorage.getItem("UserId");
-
-
+import axios from 'axios';
+var userIdLogin = localStorage.getItem("UserId");
 export default {
     data() {
         return {
@@ -63,48 +93,54 @@ export default {
                 ingredients: [],
                 procedures: [],
                 image: null,
-                imageUrl: null // Referencia de la imagen en Firebase
+                imageUrl: null, // Referencia de la imagen en Firebase
+                IsVegano: false,
+                IsVegetariano: false,
+                IsSinGluten: false,
+                IsSinLactosa: false,
+                IsBajoEnAzucar: false,
+                dietaryRestrictions: [],
             },
-            storageRef: null // Referencia al servicio de almacenamiento de Firebase
-        }
+            dropdownOpen: false,
+        };
     },
     methods: {
         addIngredient() {
-            this.recipe.ingredients.push('')
+            this.recipe.ingredients.push('');
         },
         removeIngredient(index) {
-            this.recipe.ingredients.splice(index, 1)
+            this.recipe.ingredients.splice(index, 1);
         },
         addProcedure() {
-            this.recipe.procedures.push('')
+            this.recipe.procedures.push('');
         },
         removeProcedure(index) {
-            this.recipe.procedures.splice(index, 1)
+            this.recipe.procedures.splice(index, 1);
         },
         async uploadImage(event) {
-            var file = event.target.files[0]
+            var file = event.target.files[0];
             // Subir imagen a Firebase
-            this.storageRef = app.storage().ref(`images/${file.name}`)
-            await this.storageRef.put(file)
+            this.storageRef = app.storage().ref(`images/${file.name}`);
+            await this.storageRef.put(file);
             // Obtener la referencia de la imagen en Firebase
-            const url = await this.storageRef.getDownloadURL()
-            this.recipe.imageUrl = url
+            const url = await this.storageRef.getDownloadURL();
+            this.recipe.imageUrl = url;
             // Guardar la imagen en la propiedad de la receta
-            var reader = new FileReader()
-            reader.readAsDataURL(file)
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
             reader.onload = () => {
-                this.recipe.image = reader.result
-            }
+                this.recipe.image = reader.result;
+            };
             reader.onerror = (error) => {
-                console.log(error)
-            }
+                console.log(error);
+            };
         },
         submitForm() {
-            let proceduresStr = ''
+            let proceduresStr = '';
             for (let i = 0; i < this.recipe.procedures.length; i++) {
-                proceduresStr += `${i + 1} - ${this.recipe.procedures[i]}\n`
+                proceduresStr += `${i + 1} - ${this.recipe.procedures[i]}\n`;
             }
-            var ingredientsStr = this.recipe.ingredients.join('\n')
+            var ingredientsStr = this.recipe.ingredients.join('\n');
             const data = {
                 Gente: this.recipe.people,
                 Imagen: this.recipe.imageUrl, // Usar la referencia de la imagen en Firebase
@@ -112,26 +148,38 @@ export default {
                 PasosTexto: proceduresStr,
                 Tiempo: this.recipe.time,
                 Titulo: this.recipe.title,
-                user: userId
-            }
-            console.log(data)
+                user: userIdLogin,
+                IsVegano: this.recipe.IsVegano,
+                IsVegetariano: this.recipe.IsVegetariano,
+                IsSinGluten: this.recipe.IsSinGluten,
+                IsSinLactosa: this.recipe.IsSinLactosa,
+                IsBajoEnAzucar: this.recipe.IsBajoEnAzucar,
+            };
+            console.log(data);
 
-            axios.post('http://localhost:1337/api/Recetas', { data }, {
-                params: {
-                    populate: '*'
-                }
-            })
-                .then(response => {
-                    console.log(response.data)
+            axios
+                .post('http://localhost:1337/api/Recetas', { data }, {
+                    params: {
+                        populate: '*',
+                    },
+                })
+                .then((response) => {
+                    console.log(response.data);
                     this.recipe.imageUrl = response.data.Imagen.url;
+                    this.$router.push({ name: 'UserList' });
                 })
-                .catch(error => {
-                    console.log(error.response.data)
-                })
-        }
-    }
-}
+                .catch((error) => {
+                    console.log(error.response.data);
+                });
+        },
+        toggleDropdown() {
+            this.dropdownOpen = !this.dropdownOpen;
+        },
+    },
+};
 </script>
+
+
 <style>
 .upload-recipe-container {
     display: flex;
@@ -156,6 +204,15 @@ export default {
     margin-bottom: 20px;
 }
 
+.upload-inline-group {
+    display: flex;
+    justify-content: space-between;
+}
+
+.upload-inline-group div {
+    width: 40%;
+}
+
 .upload-ingredients-container,
 .upload-procedures-container {
     margin-bottom: 20px;
@@ -172,37 +229,23 @@ export default {
     outline: none;
 }
 
-.upload-ingredients-container button,
-.upload-procedures-container button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    border: none;
+.upload-ingredients-container .upload-remove-button,
+.upload-procedures-container .upload-remove-button {
+    margin-left: 10px;
+    padding: 5px 10px;
     background-color: salmon;
+    border: none;
     color: white;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
-.upload-ingredients-container button.upload-remove-button,
-.upload-procedures-container button.upload-remove-button {
+.upload-ingredients-container .upload-remove-button:hover,
+.upload-procedures-container .upload-remove-button:hover {
     background-color: red;
-    margin: 10px;
-}
-
-.upload-ingredients-container button:hover,
-.upload-procedures-container button:hover {
-    background-color: #ff7f50;
-}
-
-.upload-ingredients-container input[type="text"],
-.upload-procedures-container input[type="text"],
-.upload-ingredients-container button,
-.upload-procedures-container button {
-    vertical-align: middle;
 }
 
 .upload-button {
     margin-top: 20px;
+    margin-bottom: 20px;
     padding: 10px 20px;
     border: none;
     height: 60px;
@@ -213,14 +256,81 @@ export default {
     cursor: pointer;
 }
 
-.upload-button:hover {
-    background-color: #ff7f50;
+.upload-ingredients-container .upload-add-button,
+.upload-procedures-container button[type="button"] {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: salmon;
+    border: none;
+    color: white;
 }
 
-.upload-form-group:nth-child(2),
-.upload-form-group:nth-child(3) {
+.upload-ingredients-container .upload-add-button:hover,
+.upload-procedures-container button[type="button"]:hover {
+    background-color: #ff9900;
+}
+
+.upload-dropdown {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.upload-dropdown label {
+    margin-bottom: 5px;
+}
+
+.upload-toggle-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.upload-toggle-block {
+    background-color: salmon;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.upload-toggle-icon {
     display: inline-block;
-    width: 45%;
-    margin-right: 10px;
+    width: 10px;
+    margin: 10px;
+    height: 10px;
+    border-top: 2px solid salmon;
+    border-right: 2px solid salmon;
+    transform: rotate(135deg);
+    transition: transform 0.3s;
+}
+
+.upload-toggle-icon.open {
+    transform: rotate(0deg);
+}
+
+.slide-enter-active,
+.slide-leave-active {
+    transition: max-height 0.3s ease-out;
+}
+
+.slide-enter,
+.slide-leave-to {
+    max-height: 0;
+    overflow: hidden;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>

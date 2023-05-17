@@ -3,11 +3,11 @@
         <div class="HomePage-search-container" v-if="isHome">
             <div class="HomePage-search-wrapper">
                 <input type="text" v-model="searchTerm" placeholder="Buscar..." class="HomePage-search-input" />
-                <button @click="search" class="HomePage-search-button">Patata</button>
+                <button @click="search" class="HomePage-search-button">Buscar</button>
             </div>
         </div>
         <div v-for="receta in recetasFiltradas" :key="receta.id">
-            <router-link :to="{ name: 'UserDetails', params: { id: receta.id } }">
+            <router-link class="custom-link" :to="{ name: 'UserDetails', params: { id: receta.id } }">
                 <div class="HomePage-cardMain">
                     <div class="HomePage-card-content">
                         <h2 class="HomePage-title">{{ receta.attributes.Titulo }}</h2>
@@ -39,7 +39,8 @@ export default {
     mounted() {
         axios.get('http://localhost:1337/api/Recetas', {
             params: {
-                populate: '*'
+                populate: '*',
+                'pagination[limit]': 80,
             }
         })
             .then(response => {
@@ -103,7 +104,7 @@ export default {
 }
 
 .HomePage-search-button {
-    background-color: #4caf50;
+    background-color: #af7c4c;
     color: white;
     border: none;
     border-radius: 25px;

@@ -2,23 +2,29 @@
     <div>
         <div class="Favoritos-search-container" v-if="isHome">
             <div class="Favoritos-search-wrapper">
-                <input type="text" v-model="searchTerm" placeholder="Buscar..." class="Favoritos-search-input" />
+                <input type="text" v-model="searchTerm" placeholder="Buscar entre tus favoritos..."
+                    class="Favoritos-search-input" />
                 <button @click="search" class="Favoritos-search-button">Buscar</button>
             </div>
         </div>
-        <div v-for="receta in recetasFiltradas" :key="receta.id">
-            <router-link :to="{ name: 'UserDetails', params: { id: receta.id } }">
-                <div class="Favoritos-cardMain">
-                    <div class="Favoritos-card-content">
-                        <h2 class="Favoritos-title">{{ receta.attributes.Titulo }}</h2>
-                        <p>{{ receta.attributes.LikesID }}</p>
-                        <p class="Favoritos-username">{{ receta.attributes.user.data.attributes.username }}</p>
+        <div class="Favoritos-grid">
+            <div v-for="receta in recetasFiltradas" :key="receta.id">
+                <router-link class="custom-link" :to="{ name: 'UserDetails', params: { id: receta.id } }">
+                    <div class="Favoritos-cardMain">
+                        <div class="Favoritos-card-content">
+                            <h2 class="Favoritos-title">{{ receta.attributes.Titulo }}</h2>
+                            <p>{{ receta.attributes.LikesID }}</p>
+                            <p class="Favoritos-username">{{ receta.attributes.user.data.attributes.username }}</p>
+                        </div>
+                        <div class="Favoritos-card-image">
+                            <img :src="receta.attributes.Imagen" alt="Imagen de la receta" />
+                        </div>
                     </div>
-                    <div class="Favoritos-card-image">
-                        <img :src="receta.attributes.Imagen" alt="Imagen de la receta" />
-                    </div>
-                </div>
-            </router-link>
+                </router-link>
+            </div>
+            <div v-if="recetasFiltradas.length === 0" class="Favoritos-no-recipes">
+                Añade recetas a favoritos y empezarán a aparecer aquí.
+            </div>
         </div>
     </div>
 </template>
@@ -41,7 +47,8 @@ export default {
         axios
             .get('http://localhost:1337/api/Recetas', {
                 params: {
-                    populate: '*'
+                    populate: '*',
+                    'pagination[limit]': 80,
                 }
             })
             .then(response => {
@@ -62,7 +69,7 @@ export default {
             if (this.searchTerm === '') {
                 this.filterRecetasByLikedUser();
             } else {
-                this.recetasFiltradas = this.recetas.filter(receta => {
+                this.recetasFiltradas = this.recetasFiltradas.filter(receta => {
                     return receta.attributes.Titulo
                         .toLowerCase()
                         .includes(this.searchTerm.toLowerCase());
@@ -80,6 +87,13 @@ export default {
 </script>
   
 <style>
+.Favoritos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px;
+}
+
 .Favoritos-search-container {
     display: flex;
     justify-content: center;
@@ -107,7 +121,7 @@ export default {
 }
 
 .Favoritos-search-button {
-    background-color: #4caf50;
+    background-color: #af4c8e;
     color: white;
     border: none;
     border-radius: 25px;
@@ -158,5 +172,12 @@ export default {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.Favoritos-no-recipes {
+    text-align: center;
+    margin-top: 20px;
+    font-style: italic;
+    color: #808080;
 }
 </style>

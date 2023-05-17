@@ -16,11 +16,15 @@
             <h2>Recetas</h2>
             <div class="recipe-cards">
                 <div v-for="receta in user.recetas" :key="receta.id" class="recipe-card">
-                    <router-link :to="{ name: 'UserDetails', params: { id: receta.id } }">
+                    <router-link class="search-custom-link" :to="{ name: 'UserDetails', params: { id: receta.id } }">
                         <h3>{{ receta.Titulo }}</h3>
                         <img :src="receta.Imagen" alt="Receta image">
                         <p>{{ receta.Descripcion }}</p>
                     </router-link>
+                </div>
+                <div v-if="user && user.recetas && user.recetas.length === 0" class="no-recipes">
+                    Empieza creando tu primera receta en
+                    <router-link class="add-recipe-link" to="/nuevo">+ AÑADIR RECETA</router-link>
                 </div>
             </div>
         </div>
@@ -142,5 +146,18 @@ export default {
 
 .recipe-card img {
     width: 100%;
+}
+
+.no-recipes {
+    text-align: center;
+    margin-top: 20px;
+    font-style: italic;
+    color: #808080;
+}
+
+.add-recipe-link {
+    color: #4caf50;
+    text-decoration: none;
+    font-weight: bold;
 }
 </style>
