@@ -22,14 +22,21 @@
                 <label for="oldPassword">Old Password</label>
                 <input type="password" id="oldPassword" v-model="form.oldPassword" required>
             </div>
+            <div class="form-group">
+                <label for="profileImage">Profile Image</label>
+                <input type="file" id="profileImage" ref="profileImage" @change="uploadProfileImage">
+            </div>
             <button type="submit">Save Changes</button>
         </form>
     </div>
 </template>
-  
+
 <script>
 import axios from "axios";
-var oldpass
+import { storage } from "../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+var oldpass;
 var userId = localStorage.getItem("UserId");
 
 export default {
@@ -41,34 +48,54 @@ export default {
                 name: "",
                 email: "",
                 password: "",
-                oldPassword: ""
-            }
+                Oldimg: "",
+                oldPassword: "",
+            },
+            profileImage: null,
+            profileImageUrl: null,
         };
     },
     mounted() {
         // Hacer una solicitud GET para obtener los datos del usuario
-        axios.get("http://localhost:1337/api/Users", {
-            params: {
-                filters: {
-                    id: userId
-                }
-            }
-        })
-            .then(response => {
+        axios
+            .get("http://localhost:1337/api/Users", {
+                params: {
+                    filters: {
+                        id: userId,
+                    },
+                },
+            })
+            .then((response) => {
                 const user = response.data[0];
                 // Asignar los datos del usuario a las propiedades del objeto form
                 this.form.username = user.username;
                 this.form.name = user.RealName;
                 this.form.email = user.email;
                 this.form.password = user.password;
+                this.form.Oldimg = user.UserImg;
                 oldpass = user.password;
-
             })
-            .catch(error => {
+            .catch((error) => {
                 console.log(error);
             });
     },
     methods: {
+        uploadProfileImage() {
+            const profileImageFile = this.$refs.profileImage.files[0];
+            const storageRef = ref(storage, `profile-images/${profileImageFile.name}`);
+            uploadBytes(storageRef, profileImageFile)
+                .then((snapshot) => {
+                    console.log("Profile image uploaded");
+                    return getDownloadURL(snapshot.ref);
+                })
+                .then((downloadURL) => {
+                    console.log("Profile image URL:", downloadURL);
+                    this.profileImageUrl = downloadURL;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
         submitForm() {
             // Verificar si la contraseña antigua es igual a la contraseña obtenida de la API
             if (this.form.oldPassword === oldpass) {
@@ -77,15 +104,17 @@ export default {
                     RealName: this.form.name,
                     email: this.form.email,
                     password: this.form.password,
-                    role: 1
+                    role: 1,
+                    UserImg: this.profileImageUrl ? this.profileImageUrl : this.form.Oldimg,
                 };
 
-                axios.put(`http://localhost:1337/api/Users/${userId}`, user)
-                    .then(response => {
+                axios
+                    .put(`http://localhost:1337/api/Users/${userId}`, user)
+                    .then((response) => {
                         console.log(response.data);
                         // Handle successful response
                     })
-                    .catch(error => {
+                    .catch((error) => {
                         console.log(error);
                         // Handle error
                     });
@@ -93,13 +122,12 @@ export default {
                 // La contraseña antigua ingresada es incorrecta
                 console.log("La contraseña antigua ingresada es incorrecta");
             }
-        }
-    }
-
+        },
+    },
 };
 </script>
 
-  
+
 <style scoped>
 .user-profile-edit {
     max-width: 600px;
@@ -149,4 +177,3 @@ button[type="submit"]:hover {
     background-color: #0062cc;
 }
 </style>
-  

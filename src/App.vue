@@ -13,7 +13,9 @@
     <div class="user-actions">
       <a href="/nuevo" class="btn-primary"><i class="fas fa-plus"></i><span>Añadir Recetas</span></a>
       <a href="/usuario">
-        <img class="profile-img" src="https://via.placeholder.com/50x50" alt="Foto de perfil">
+        <div class="profile-img">
+          <i class="fas fa-user"></i>
+        </div>
         <span>Usuario</span>
       </a>
     </div>
