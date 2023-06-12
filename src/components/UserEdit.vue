@@ -1,33 +1,31 @@
 <template>
     <div class="user-profile-edit">
         <h2>Edit Profile</h2>
-        <form @submit.prevent="submitForm">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" v-model="form.username" required>
-            </div>
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" v-model="form.name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" v-model="form.email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">New Password</label>
-                <input type="password" id="password" v-model="form.password" required>
-            </div>
-            <div class="form-group">
-                <label for="oldPassword">Old Password</label>
-                <input type="password" id="oldPassword" v-model="form.oldPassword" required>
-            </div>
-            <div class="form-group">
-                <label for="profileImage">Profile Image</label>
-                <input type="file" id="profileImage" ref="profileImage" @change="uploadProfileImage">
-            </div>
-            <button type="submit">Save Changes</button>
-        </form>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" v-model="form.username" required>
+        </div>
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" v-model="form.name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" v-model="form.email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">New Password</label>
+            <input type="password" id="password" v-model="form.password" required>
+        </div>
+        <div class="form-group">
+            <label for="oldPassword">Old Password</label>
+            <input type="password" id="oldPassword" v-model="form.oldPassword" required>
+        </div>
+        <div class="form-group">
+            <label for="profileImage">Profile Image</label>
+            <input type="file" id="profileImage" ref="profileImage" @change="uploadProfileImage">
+        </div>
+        <button type="button" @click="submitForm">Save Changes</button>
     </div>
 </template>
 
@@ -58,15 +56,9 @@ export default {
     mounted() {
         // Hacer una solicitud GET para obtener los datos del usuario
         axios
-            .get("http://localhost:1337/api/Users", {
-                params: {
-                    filters: {
-                        id: userId,
-                    },
-                },
-            })
+            .get(`http://localhost:1337/api/Users/${userId}`)
             .then((response) => {
-                const user = response.data[0];
+                const user = response.data;
                 // Asignar los datos del usuario a las propiedades del objeto form
                 this.form.username = user.username;
                 this.form.name = user.RealName;
@@ -109,9 +101,15 @@ export default {
                 };
 
                 axios
-                    .put(`http://localhost:1337/api/Users/${userId}`, user)
+                    .put(`http://localhost:1337/api/Users/${userId}`, user, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+                        },
+                    })
                     .then((response) => {
                         console.log(response.data);
+
+                        
                         // Handle successful response
                     })
                     .catch((error) => {
@@ -126,6 +124,7 @@ export default {
     },
 };
 </script>
+
 
 
 <style scoped>
