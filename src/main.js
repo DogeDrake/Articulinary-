@@ -98,7 +98,7 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-router.push("/login");
+router.push("/home");
 
 const appVue = createApp(App);
 /* add font awesome icon component */

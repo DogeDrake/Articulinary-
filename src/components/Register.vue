@@ -68,6 +68,7 @@ export default {
                 username: this.username,
                 email: this.email,
                 password: this.password,
+                UserImg: "https://firebasestorage.googleapis.com/v0/b/articullinary.appspot.com/o/notes%2Fimages%2Fuserimage.png?alt=media&token=dbf7c8dd-6759-4d20-a792-fc67eb9daea0&_gl=1*1ktfnw6*_ga*NjczMjI0NTY4LjE2NzY1MzU5NjA.*_ga_CW55HF8NVT*MTY4NjQ5MzA3NC4yMC4xLjE2ODY0OTMzOTkuMC4wLjA.",
                 role: 1
             };
 

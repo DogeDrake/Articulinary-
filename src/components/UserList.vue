@@ -93,7 +93,7 @@ export default {
                 },
             })
             .then((response) => {
-                this.recetas = response.data.data;
+                this.recetas = response.data.data.reverse();
                 this.recetasFiltradas = response.data.data;
                 this.getUltimasRecetasOrdenadas();
                 this.ordenarRecetasGustadas();

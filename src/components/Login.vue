@@ -35,6 +35,8 @@ export default {
     mounted() {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('UserId');
+
+/*
         axios.get('http://localhost:1337/api/Users')
             .then(response => {
                 this.users = response.data
@@ -47,6 +49,9 @@ export default {
         $(document).ready(function () {
             $('.carousel').carousel();
         });
+        */
+
+
     },
     methods: {
         ...mapMutations(['setUserId']),
@@ -59,23 +64,23 @@ export default {
             } else {
                 console.log(correo + contrasena)
                 let usuarioEncontrado = false;
-                this.users.forEach(user => {
-                    if ((user.username === correo || user.email === correo) && user.password === contrasena) {
-                        usuarioEncontrado = true;
-                        UserIdLogin = user.id
-                        console.log(usuarioEncontrado)
-                        // Aquí va la lógica para redirigir al usuario si el log in es exitoso
-                    }
-                });
-                if (usuarioEncontrado) {
-                    localStorage.setItem('isAuthenticated', true);
-                    console.log(UserIdLogin);
-                    localStorage.setItem('UserId', UserIdLogin);
-                    this.setUserId(UserIdLogin); // llamamos a la acción setUserId y pasamos el UserIdLogin
-                    this.$router.push({ name: 'UserList' })
-                } else {
-                    // document.getElementById("txtError").textContent = "CREDENCIALES INCORRECTAS";
-                }
+                axios.post('http://localhost:1337/api/auth/local', {
+                    identifier: correo,
+                    password: contrasena
+                })
+                    .then(response => {
+                        // Aquí se ejecuta si la solicitud de inicio de sesión es exitosa
+                        console.log(response.data);
+                        localStorage.setItem('isAuthenticated', true);
+                        localStorage.setItem('UserId', response.data.user.id);
+                        this.setUserId(response.data.user.id);
+                        this.$router.push({ name: 'UserList' });
+                    })
+                    .catch(error => {
+                        // Aquí se ejecuta si hay un error en la solicitud de inicio de sesión
+                        console.log(error);
+                        // document.getElementById("txtError").textContent = "CREDENCIALES INCORRECTAS";
+                    });
             }
         }
     }
@@ -83,9 +88,8 @@ export default {
 </script>
 
 
+
 <style>
-
-
 .login-container {
     display: flex;
     justify-content: center;
