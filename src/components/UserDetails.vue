@@ -179,12 +179,12 @@ export default {
 <style>
 html {
     font-family: 'Roboto', sans-serif;
-    background-color: #ffd0cb;
+    background-color: #faebd7 ;
     text-decoration: none;
 }
 
 .card-container {
-    background-color: #ffd0cb;
+    background-color: #faebd7 ;
     padding: 10px;
     box-sizing: border-box;
 }
@@ -245,7 +245,7 @@ html {
     white-space: pre-wrap;
     line-height: 25px;
     padding: 20px;
-    background-color: #ffd0cb;
+    background-color: #faebd7 ;
 }
 
 .router-link {

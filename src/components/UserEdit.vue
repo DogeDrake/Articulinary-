@@ -74,7 +74,7 @@ export default {
     methods: {
         uploadProfileImage() {
             const profileImageFile = this.$refs.profileImage.files[0];
-            const storageRef = ref(storage, `profile-images/${profileImageFile.name}`);
+            const storageRef = ref(storage, `notes/images/${file.name}`);
             uploadBytes(storageRef, profileImageFile)
                 .then((snapshot) => {
                     console.log("Profile image uploaded");
@@ -90,12 +90,10 @@ export default {
         },
         submitForm() {
             // Verificar si la contraseña antigua es igual a la contraseña obtenida de la API
-            if (this.form.oldPassword === oldpass) {
                 const user = {
                     username: this.form.username,
                     RealName: this.form.name,
                     email: this.form.email,
-                    password: this.form.password,
                     role: 1,
                     UserImg: this.profileImageUrl ? this.profileImageUrl : this.form.Oldimg,
                 };
@@ -116,10 +114,7 @@ export default {
                         console.log(error);
                         // Handle error
                     });
-            } else {
-                // La contraseña antigua ingresada es incorrecta
-                console.log("La contraseña antigua ingresada es incorrecta");
-            }
+
         },
     },
 };

@@ -3,7 +3,7 @@
         <div class="user-info">
             <div class="user-header">
                 <h1>{{ user.username }}</h1>
-                <a href="/editar">
+                <a @click="openEditModal">
                     <i class="fas fa-pencil-alt edit-icon"></i>
                 </a>
             </div>
@@ -18,12 +18,6 @@
             </button>
         </div>
 
-
-
-
-
-
-
         <div class="recipes">
             <h2>Recetas</h2>
             <div class="recipe-cards">
@@ -37,7 +31,6 @@
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
-
 
                 <div v-if="user && user.recetas && user.recetas.length === 0" class="no-recipes">
                     Empieza creando tu primera receta en
@@ -56,6 +49,27 @@
                 </div>
             </div>
         </div>
+        <!-- Edit Modal -->
+        <div v-if="showEditModal" class="modal">
+            <div class="modal-content edit-modal">
+                <h3>Editar usuario</h3>
+
+                <div class="profile-image-container">
+                    <img :src="editUserImg" alt="Profile image" class="profile-image">
+                    <div>
+                        <input ref="profileImage" type="file" accept="image/*" @change="uploadProfileImage">
+                        <button @click="clearProfileImage">Borrar imagen</button>
+                    </div>
+                </div>
+                <input v-model="editUsername" placeholder="Nombre de usuario" type="text">
+                <input v-model="RealName" placeholder="Nombre" type="text">
+                <input v-model="editEmail" placeholder="Email" type="text">
+                <div class="modal-buttons">
+                    <button @click="UpdateDataUser" class="save-button">Aceptar</button>
+                    <button @click="cancelEdit" class="cancel-button">Cancelar</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -63,6 +77,10 @@
 import axios from 'axios'
 import { mapState } from 'vuex'
 var userIdLogin = localStorage.getItem("UserId");
+import { storage } from "../firebase";
+var userId = localStorage.getItem("UserId");
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 
 export default {
     computed: {
@@ -72,7 +90,14 @@ export default {
         return {
             user: {},
             showModal: false,
-            recipeToDeleteId: null
+            recipeToDeleteId: null,
+            showEditModal: false,
+            editUsername: '',
+            editEmail: '',
+            editUserImg: '',
+            RealName: '',
+            profileImage: null,
+            profileImageUrl: null,
         }
     },
     methods: {
@@ -84,6 +109,7 @@ export default {
             })
                 .then(response => {
                     this.user = response.data
+                    this.RealName = this.user.RealName;
                     console.log(this.user)
                     console.log(this.userId)
                     console.log(this.user.recetas)
@@ -118,7 +144,73 @@ export default {
                         console.log(error);
                     });
             }
-        }
+        },
+        openEditModal() {
+            this.editUsername = this.user.username;
+            this.editEmail = this.user.email;
+            this.editRealName = this.user.RealName;
+            this.editUserImg = this.user.UserImg;
+            this.showEditModal = true;
+        },
+        cancelEdit() {
+            this.showEditModal = false;
+
+        },
+        saveChanges() {
+            // Aquí puedes enviar los cambios al servidor mediante una solicitud HTTP
+            // Por simplicidad, aquí solo actualizaremos los valores en el componente
+            this.user.username = this.editUsername;
+            this.user.email = this.editEmail;
+            this.editRealName = this.user.RealName;
+            this.user.UserImg = this.editUserImg;
+
+
+        },
+        UpdateDataUser() {
+            const user = {
+                username: this.editUsername,
+                RealName: this.RealName,
+                email: this.editEmail,
+                role: 1,
+                UserImg: this.profileImageUrl ? this.profileImageUrl : this.editUserImg,
+            };
+
+            axios
+                .put(`http://localhost:1337/api/Users/${userId}`, user)
+                .then((response) => {
+                    console.log(response.data);
+                    this.showEditModal = false;
+                    this.getUser();
+                    // Handle successful response
+                })
+                .catch((error) => {
+                    console.log(error);
+
+                    // Handle error
+                });
+
+        },
+        uploadProfileImage() {
+            const profileImageFile = this.$refs.profileImage.files[0];
+            const storageRef = ref(storage, `notes/images/${profileImageFile.name}`);
+            uploadBytes(storageRef, profileImageFile)
+                .then((snapshot) => {
+                    console.log("Profile image uploaded");
+                    return getDownloadURL(snapshot.ref);
+                })
+                .then((downloadURL) => {
+                    console.log("Profile image URL:", downloadURL);
+                    this.profileImageUrl = downloadURL;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        clearProfileImage() {
+            this.editUserImg = ''
+            this.$refs.profileImage.value = ''
+        },
+
     },
     mounted() {
         this.getUser();
@@ -126,7 +218,8 @@ export default {
 }
 </script>
 
-<style>
+
+<style scoped>
 .user-profile {
     display: flex;
     flex-direction: column;
@@ -311,5 +404,39 @@ export default {
 .modal-buttons .cancel-button {
     background-color: #808080;
     color: #fff;
+}
+
+.edit-modal input {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.edit-modal .modal-buttons {
+    justify-content: flex-end;
+}
+
+.edit-modal .profile-image-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.edit-modal .profile-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.edit-modal button {
+    margin-left: 1rem;
+}
+
+.save-button {
+    background-color: #4caf50;
 }
 </style>

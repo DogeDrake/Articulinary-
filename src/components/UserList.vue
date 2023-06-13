@@ -169,7 +169,7 @@ export default {
 
 <style>
 .HomePage {
-    background-color: #ffd0cb;
+    background-color: #faebd7 ;
     padding: 50px 0;
     overflow-x: hidden;
 }

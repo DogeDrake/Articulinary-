@@ -9,8 +9,13 @@
                 </div>
                 <div>
                     <label for="password">Password</label>
-                    <input type="password" id="password" v-model="password">
+                    <div class="password-input-container">
+                        <input id="password" v-model="password" :type="showPassword ? 'text' : 'password'" />
+                        <i class="toggle-password fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                            @click="showPassword = !showPassword"></i>
+                    </div>
                 </div>
+
                 <button @click.prevent="login">Log In</button>
             </form>
             <p>No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link></p>
@@ -29,27 +34,28 @@ import $ from 'jquery';
 export default {
     data() {
         return {
-            users: []
+            users: [],
+            showPassword: false
         }
     },
     mounted() {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('UserId');
 
-/*
-        axios.get('http://localhost:1337/api/Users')
-            .then(response => {
-                this.users = response.data
-                console.log(this.users)
-            })
-            .catch(error => {
-                console.log(error)
-            })
-
-        $(document).ready(function () {
-            $('.carousel').carousel();
-        });
-        */
+        /*
+                axios.get('http://localhost:1337/api/Users')
+                    .then(response => {
+                        this.users = response.data
+                        console.log(this.users)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+        
+                $(document).ready(function () {
+                    $('.carousel').carousel();
+                });
+                */
 
 
     },
@@ -89,14 +95,14 @@ export default {
 
 
 
-<style>
+<style scoped>
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     overflow-y: hidden;
-    background-color: #ffd0cb;
+    background-color: #faebd7  ;
 
 
 }
@@ -167,6 +173,23 @@ export default {
 .login-form p router-link {
     color: #c18e2e;
     text-decoration: underline;
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.password-input-container .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #aaa;
+    cursor: pointer;
+}
+
+.password-input-container .toggle-password:hover {
+    color: #777;
 }
 </style>
 

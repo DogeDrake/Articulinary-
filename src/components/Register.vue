@@ -34,9 +34,10 @@
         </div>
     </div>
 </template>
-  
+
 <script>
-import axios from 'axios'
+import axios from 'axios';
+
 export default {
     data() {
         return {
@@ -44,23 +45,23 @@ export default {
             email: '',
             password: '',
             rewritePassword: '',
-            showPassword: false
-        }
+            showPassword: false,
+        };
     },
     computed: {
         passwordStrength() {
             return this.calculatePasswordStrength(this.password);
-        }
+        },
     },
     methods: {
         register() {
             if (this.password !== this.rewritePassword) {
-                alert("Las contraseñas no coinciden.");
+                alert('Las contraseñas no coinciden.');
                 return;
             }
 
             if (!this.isPasswordValid(this.password)) {
-                alert("La contraseña debe tener al menos una mayúscula, una minúscula, un número y ser de al menos 8 caracteres.");
+                alert('La contraseña debe tener al menos una mayúscula, una minúscula, un número y ser de al menos 8 caracteres.');
                 return;
             }
 
@@ -68,17 +69,18 @@ export default {
                 username: this.username,
                 email: this.email,
                 password: this.password,
-                UserImg: "https://firebasestorage.googleapis.com/v0/b/articullinary.appspot.com/o/notes%2Fimages%2Fuserimage.png?alt=media&token=dbf7c8dd-6759-4d20-a792-fc67eb9daea0&_gl=1*1ktfnw6*_ga*NjczMjI0NTY4LjE2NzY1MzU5NjA.*_ga_CW55HF8NVT*MTY4NjQ5MzA3NC4yMC4xLjE2ODY0OTMzOTkuMC4wLjA.",
-                role: 1
+                UserImg: 'https://firebasestorage.googleapis.com/v0/b/articullinary.appspot.com/o/notes%2Fimages%2Fuserimage.png?alt=media&token=dbf7c8dd-6759-4d20-a792-fc67eb9daea0&_gl=1*1ktfnw6*_ga*NjczMjI0NTY4LjE2NzY1MzU5NjA.*_ga_CW55HF8NVT*MTY4NjQ5MzA3NC4yMC4xLjE2ODY0OTMzOTkuMC4wLjA.',
+                role: '',
             };
 
-            axios.post('http://localhost:1337/api/Users', data)
-                .then(response => {
+            axios
+                .post('http://localhost:1337/api/auth/local/register', data)
+                .then((response) => {
                     console.log(response.data);
                     this.$router.push({ name: 'Login' });
                     // Aquí puedes agregar la redirección a la pantalla de Login si el registro es exitoso
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.log(error.response.data);
                 });
         },
@@ -89,8 +91,7 @@ export default {
         calculatePasswordStrength(password) {
             let strength = 0;
             if (password.match(/[a-z]/)) {
-                strength +=
-                    25;
+                strength += 25;
             }
             if (password.match(/[A-Z]/)) {
                 strength += 25;
@@ -105,10 +106,11 @@ export default {
         },
         togglePasswordVisibility() {
             this.showPassword = !this.showPassword;
-        }
-    }
-}
+        },
+    },
+};
 </script>
+
 <style>
 .register-container {
     display: flex;
