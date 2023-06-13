@@ -20,15 +20,22 @@
                         </span>
                     </div>
                 </div>
+                <div class="password-strength-meter">
+                        <div class="strength-bar" :style="{ width: passwordStrength + '%' }" :data-strength="passwordStrength">
+                        </div>
+                    </div>
                 <div class="form-group">
                     <label for="rewrite-password">Rewrite Password</label>
                     <input type="password" id="rewrite-password" v-model="rewritePassword" />
                 </div>
-                <div class="password-strength-meter">
-                    <div class="strength-bar" :style="{ width: passwordStrength + '%' }" :data-strength="passwordStrength">
+                <div class="form-group">
+                        <div class="inline">
+                            <input type="checkbox" id="terms" v-model="acceptTerms" />
+                            <label for="terms">Acepto los <a href="Terminos"> Términos y Condiciones </a> </label>
+                        </div>
                     </div>
-                </div>
                 <button @click.prevent="register">Registrarse</button>
+                <span class="error-message" v-if="errorMessage">{{ errorMessage }}</span>
             </form>
             <p>Ya tienes cuenta? <router-link to="/login">Inicia sesión aquí</router-link></p>
         </div>
@@ -46,6 +53,8 @@ export default {
             password: '',
             rewritePassword: '',
             showPassword: false,
+            errorMessage: '',
+            acceptTerms: false,
         };
     },
     computed: {
@@ -55,13 +64,22 @@ export default {
     },
     methods: {
         register() {
+            if (!this.acceptTerms) {
+                this.errorMessage = 'Debes aceptar los Términos y Condiciones.';
+                return;
+            }
+            if (!this.username || !this.email || !this.password || !this.rewritePassword) {
+                this.errorMessage = 'Por favor, completa todos los campos.';
+                return;
+            }
+
             if (this.password !== this.rewritePassword) {
-                alert('Las contraseñas no coinciden.');
+                this.errorMessage = 'Las contraseñas no coinciden.';
                 return;
             }
 
             if (!this.isPasswordValid(this.password)) {
-                alert('La contraseña debe tener al menos una mayúscula, una minúscula, un número y ser de al menos 8 caracteres.');
+                this.errorMessage = 'La contraseña debe tener al menos una mayúscula, una minúscula, un número y ser de al menos 8 caracteres.';
                 return;
             }
 
@@ -82,6 +100,7 @@ export default {
                 })
                 .catch((error) => {
                     console.log(error.response.data);
+                    this.errorMessage = 'Error en el registro. Por favor, verifica los datos ingresados.';
                 });
         },
         isPasswordValid(password) {
@@ -111,7 +130,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .register-container {
     display: flex;
     align-items: center;
@@ -237,5 +256,13 @@ export default {
     right: 10px;
     transform: translateY(-50%);
     cursor: pointer;
+}
+
+.error-message {
+    color: red;
+}
+.inline{
+    display:inline-block;
+    margin: 10px;
 }
 </style>

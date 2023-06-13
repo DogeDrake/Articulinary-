@@ -1,7 +1,14 @@
 <template>
     <div class="login-container">
         <div class="login-form">
-            <h2>Login</h2>
+            <div class="inline">
+                <h2>Login</h2>
+                <div>
+                    <a class="faq-button" href="FAQ">
+                        <i class="fas fa-question-circle"></i>
+                    </a>
+                </div>
+            </div>
             <form>
                 <div>
                     <label for="email">Email/Username</label>
@@ -17,9 +24,12 @@
                 </div>
 
                 <button @click.prevent="login">Log In</button>
+                <span class="error-message" v-if="errorMessage">{{ errorMessage }}</span>
             </form>
             <p>No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link></p>
         </div>
+
+
     </div>
 </template>
 
@@ -34,8 +44,10 @@ import $ from 'jquery';
 export default {
     data() {
         return {
-            users: [],
-            showPassword: false
+            email: '',
+            password: '',
+            showPassword: false,
+            errorMessage: '',
         }
     },
     mounted() {
@@ -66,7 +78,7 @@ export default {
             let contrasena = document.getElementById("password").value;
             let UserIdLogin = null
             if (correo === "" || contrasena === "") {
-                // document.getElementById("txtError").textContent = "RELLENE TODOS LOS CAMPOS";
+                this.errorMessage = "RELLENE TODOS LOS CAMPOS";
             } else {
                 console.log(correo + contrasena)
                 let usuarioEncontrado = false;
@@ -85,7 +97,7 @@ export default {
                     .catch(error => {
                         // Aquí se ejecuta si hay un error en la solicitud de inicio de sesión
                         console.log(error);
-                        // document.getElementById("txtError").textContent = "CREDENCIALES INCORRECTAS";
+                        this.errorMessage = 'CREDENCIALES INCORRECTAS';
                     });
             }
         }
@@ -102,7 +114,7 @@ export default {
     align-items: center;
     height: 100vh;
     overflow-y: hidden;
-    background-color: #faebd7  ;
+    background-color: #faebd7;
 
 
 }
@@ -190,6 +202,13 @@ export default {
 
 .password-input-container .toggle-password:hover {
     color: #777;
+}
+
+.error-message {
+    color: red;
+}
+.inline{
+    display:inline-block;
 }
 </style>
 

@@ -11,6 +11,8 @@ import UserProfile from "./components/UserProfile.vue";
 import UserEdit from "./components/UserEdit.vue";
 import Favoritos from "./components/Favoritos.vue";
 import Buscar from "./components/Buscar.vue";
+import FAQ from "./components/PreguntasFrecuentes.vue";
+import Terminos from "./components/Terminos.vue";
 import store from "./store";
 /* import the fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -76,6 +78,18 @@ const routes = [
     name: "Editar",
     component: UserEdit,
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/FAQ",
+    name: "FAQ",
+    component: FAQ,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: "/Terminos",
+    name: "Terminos",
+    component: Terminos,
+    meta: { requiresAuth: false },
   },
 ];
 
