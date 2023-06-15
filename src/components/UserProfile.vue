@@ -13,9 +13,17 @@
                 <li>Fecha de registro: {{ user.createdAt }}</li>
             </ul>
 
-            <button @click="logout" class="logout-button">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </button>
+            <div class="button-group">
+                <button @click="logout" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+
+                <button v-if="isAdmin" class="admin-button">
+                    <router-link to="/Admin" class="back-link">
+                    <i class="fas fa-cog"></i> Panel de Administrador
+                    </router-link>
+                </button>
+            </div>
         </div>
 
         <div class="recipes">
@@ -113,6 +121,9 @@ export default {
                     console.log(this.user)
                     console.log(this.userId)
                     console.log(this.user.recetas)
+
+                    // Verificar si el usuario es administrador
+                    this.isAdmin = this.user.id === 1;
                 })
                 .catch(error => {
                     console.log(error)
@@ -438,5 +449,22 @@ export default {
 
 .save-button {
     background-color: #4caf50;
+}
+
+.button-group {
+  display: flex;
+  align-items: center;
+}
+
+.admin-button{
+    margin-left: 10px;
+    background-color: blue;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 </style>

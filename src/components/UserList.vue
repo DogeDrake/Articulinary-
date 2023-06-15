@@ -14,17 +14,17 @@
                             <div class="HomePage-card-content">
                                 <h2 class="HomePage-title">{{ receta.attributes.Titulo }}</h2>
                                 <p class="HomePage-username">{{ receta.attributes.user.data.attributes.username }}</p>
+                                <div class="dialogue-box">
+                                    <div class="HomePage-dialogue-box-content">
+                                        <h3 style="color: salmon">Ingredientes:</h3>
+                                        <pre>{{ receta.attributes.IngredientesTexto }}</pre>
+                                    </div>
+                                </div>
                             </div>
                             <div class="HomePage-card-image">
                                 <img :src="receta.attributes.Imagen" alt="Imagen de la receta" />
                             </div>
                         </router-link>
-                        <div class="dialogue-box">
-                            <div class="HomePage-dialogue-box-content">
-                                <h3 style="color:red">Ingredientes: </h3>
-                                <pre>{{ receta.attributes.IngredientesTexto }}</pre>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="HomePage-arrow" @click="nextRecetas('ultimasRecetas')">
@@ -35,7 +35,7 @@
 
         <div class="HomePage-section">
             <h2 class="HomePage-section-title">
-                Recetas más gustadas
+                Recetas Más Populares
             </h2>
             <div class="HomePage-recipe-cards-container">
                 <div class="HomePage-arrow" @click="prevRecetas('recetasGustadas')">
@@ -46,20 +46,21 @@
                         <router-link class="custom-link" :to="{ name: 'UserDetails', params: { id: receta.id } }">
                             <div class="HomePage-card-content">
                                 <h2 class="HomePage-title">{{ receta.attributes.Titulo }}</h2>
-                                <p class="HomePage-likes">{{ receta.likes }} Likes</p>
+                                <p class="HomePage-likes">
+                                    <i class="fas fa-heart"></i> {{ receta.likes }}
+                                </p>
                                 <!-- Mostrar número de Likes -->
+                                <div class="dialogue-box">
+                                    <div class="HomePage-dialogue-box-content">
+                                        <h3 style="color: salmon">Ingredientes:</h3>
+                                        <pre>{{ receta.attributes.IngredientesTexto }}</pre>
+                                    </div>
+                                </div>
                             </div>
                             <div class="HomePage-card-image">
                                 <img :src="receta.attributes.Imagen" alt="Imagen de la receta" />
                             </div>
                         </router-link>
-
-                        <div class="dialogue-box">
-                            <div class="HomePage-dialogue-box-content">
-                                <h3 style="color:red">Ingredientes: </h3>
-                                <pre>{{ receta.attributes.IngredientesTexto }}</pre>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="HomePage-arrow" @click="nextRecetas('recetasGustadas')">
@@ -104,16 +105,10 @@ export default {
     },
     methods: {
         getUltimasRecetas() {
-            return this.ultimasRecetas.slice(
-                this.ultimasRecetasIndex,
-                this.ultimasRecetasIndex + 6
-            );
+            return this.ultimasRecetas.slice(this.ultimasRecetasIndex, this.ultimasRecetasIndex + 6);
         },
         getRecetasGustadas() {
-            return this.recetasGustadas.slice(
-                this.recetasGustadasIndex,
-                this.recetasGustadasIndex + 6
-            );
+            return this.recetasGustadas.slice(this.recetasGustadasIndex, this.recetasGustadasIndex + 6);
         },
         prevRecetas(section) {
             if (section === "ultimasRecetas") {
@@ -127,10 +122,7 @@ export default {
             }
         },
         getUltimasRecetasOrdenadas() {
-            const ultimasRecetas = this.recetas.slice(
-                this.ultimasRecetasIndex,
-                this.ultimasRecetasIndex + 6
-            );
+            const ultimasRecetas = this.recetas.slice(this.ultimasRecetasIndex, this.ultimasRecetasIndex + 6);
             this.ultimasRecetas = ultimasRecetas; // Actualiza el arreglo de últimas recetas
             return this.ultimasRecetas; // Agregar el retorno del arreglo ordenado
         },
@@ -147,9 +139,7 @@ export default {
         },
         ordenarRecetasGustadas() {
             // Filtra las recetas que tienen LikesID definido
-            const recetasConLikes = this.recetasFiltradas.filter(
-                (receta) => receta.attributes.LikesID
-            );
+            const recetasConLikes = this.recetasFiltradas.filter((receta) => receta.attributes.LikesID);
 
             // Calcula el número de likes para cada receta
             recetasConLikes.forEach((receta) => {
@@ -169,7 +159,7 @@ export default {
 
 <style>
 .HomePage {
-    background-color: #faebd7 ;
+    background-color: #faebd7;
     padding: 50px 0;
     overflow-x: hidden;
 }
@@ -180,9 +170,17 @@ export default {
 
 .HomePage-section-title {
     display: flex;
+    margin-left: 60px;
     align-items: center;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 900;
     justify-content: space-between;
     margin-bottom: 20px;
+    color: white;
+    text-shadow: -1px 1px 0 #000,
+        1px 1px 0 #000,
+        1px -1px 0 #000,
+        -1px -1px 0 #000;
 }
 
 .HomePage-recipe-cards-container {
@@ -209,15 +207,17 @@ export default {
     margin-right: 10px;
     width: 290px;
     height: 375px;
-    transition: transform 0.3s ease-in-out;
 }
 
-.HomePage-cardMain:hover {
+.HomePage-card-content:hover {
     transform: scale(1.02);
 }
 
 .HomePage-card-content {
     padding: 10px;
+    margin: 5px;
+    height: 100px;
+    transition: transform 0.3s ease-in-out;
 }
 
 .HomePage-title {
@@ -259,21 +259,24 @@ export default {
 }
 
 .HomePage-arrow:hover {
-    background-color: #616161;
+    background-color: #616161b6;
 }
 
 .dialogue-box {
     width: 100%;
-    position: absolute;
     background-color: #fff;
     border-radius: 5px;
-    padding: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    z-index: 1;
     visibility: hidden;
+    opacity: 0;
+    color: black;
+    font-weight: 900;
+    padding: 5px;
+    transition: opacity 0.3s;
 }
 
-.HomePage-cardMain:hover .dialogue-box {
+.HomePage-card-content:hover .dialogue-box {
     visibility: visible;
+    opacity: 1;
 }
 </style>

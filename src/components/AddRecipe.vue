@@ -39,13 +39,12 @@
             </div>
             <div class="upload-form-group">
                 <label for="image">Imagen</label>
-                <input type="file" id="image" ref="myimage" @change="uploadImage($event)">
-                <!--<button @click="uploadImage">subir imagen</button>-->
+                <input type="file" id="image" ref="myimage" @change="uploadImage($event)" required>
             </div>
 
             <div class="upload-form-group">
                 <button class="upload-toggle-button" type="button" @click="toggleDropdown">
-                    <label class=" upload-toggle-block">Contenido Extra</label>
+                    <label class="upload-toggle-block">Contenido Extra</label>
                     <span class="upload-toggle-icon" :class="{ open: dropdownOpen }"></span>
                 </button>
                 <transition name="fade">
@@ -78,11 +77,12 @@
         </form>
     </div>
 </template>
+
 <script>
 import axios from 'axios';
 var userIdLogin = localStorage.getItem("UserId");
 import { storage } from "../firebase";
-import { ref, uploadBytes, getDownloadURL  } from "firebase/storage"
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 export default {
     data() {
@@ -136,44 +136,69 @@ export default {
                 });
         },
         submitForm() {
-            let proceduresStr = '';
-            for (let i = 0; i < this.recipe.procedures.length; i++) {
-                proceduresStr += `${i + 1} - ${this.recipe.procedures[i]}\n`;
-            }
-            var ingredientsStr = this.recipe.ingredients.join('\n');
-            const data = {
-                Gente: this.recipe.people,
-                Imagen: this.recipe.imageUrl, // Usar la referencia de la imagen en Firebase
-                IngredientesTexto: ingredientsStr,
-                PasosTexto: proceduresStr,
-                Tiempo: this.recipe.time,
-                Titulo: this.recipe.title,
-                user: userIdLogin,
-                IsVegano: this.recipe.IsVegano,
-                IsVegetariano: this.recipe.IsVegetariano,
-                IsSinGluten: this.recipe.IsSinGluten,
-                IsSinLactosa: this.recipe.IsSinLactosa,
-                IsBajoEnAzucar: this.recipe.IsBajoEnAzucar,
-            };
-            console.log(data);
+            if (this.isFormValid()) {
+                let proceduresStr = '';
+                for (let i = 0; i < this.recipe.procedures.length; i++) {
+                    proceduresStr += `${i + 1} - ${this.recipe.procedures[i]}\n\n`;
+                }
+                const ingredientsStr = this.recipe.ingredients.join('\n');
+                const data = {
+                    Gente: this.recipe.people,
+                    Imagen: this.recipe.imageUrl, // Usar la referencia de la imagen en Firebase
+                    IngredientesTexto: ingredientsStr,
+                    PasosTexto: proceduresStr,
+                    Tiempo: this.recipe.time,
+                    Titulo: this.recipe.title,
+                    user: userIdLogin,
+                    IsVegano: this.recipe.IsVegano,
+                    IsVegetariano: this.recipe.IsVegetariano,
+                    IsSinGluten: this.recipe.IsSinGluten,
+                    IsSinLactosa: this.recipe.IsSinLactosa,
+                    IsBajoEnAzucar: this.recipe.IsBajoEnAzucar,
+                };
+                console.log(data);
 
-            axios
-                .post('http://localhost:1337/api/Recetas', { data }, {
-                    params: {
-                        populate: '*',
-                    },
-                })
-                .then((response) => {
-                    console.log(response.data);
-                    this.recipe.imageUrl = response.data.Imagen.url;
-                    this.$router.push({ name: 'UserList' });
-                })
-                .catch((error) => {
-                    console.log(error.response.data);
-                });
+                axios
+                    .post('http://localhost:1337/api/Recetas', { data }, {
+                        params: {
+                            populate: '*',
+                        },
+                    })
+                    .then((response) => {
+                        console.log(response.data);
+                        this.recipe.imageUrl = response.data.Imagen.url;
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+                    this.$router.push('/home');
+            }
         },
         toggleDropdown() {
             this.dropdownOpen = !this.dropdownOpen;
+        },
+        isFormValid() {
+            if (this.recipe.title.trim() === '') {
+                alert('Por favor, ingresa un título.');
+                return false;
+            }
+            if (this.recipe.people === null || this.recipe.people <= 0) {
+                alert('Por favor, ingresa un número válido de personas.');
+                return false;
+            }
+            if (this.recipe.time === null || this.recipe.time <= 0) {
+                alert('Por favor, ingresa un tiempo válido de cocinado.');
+                return false;
+            }
+            if (this.recipe.ingredients.length === 0) {
+                alert('Por favor, ingresa al menos un ingrediente.');
+                return false;
+            }
+            if (this.recipe.procedures.length === 0) {
+                alert('Por favor, ingresa al menos un procedimiento.');
+                return false;
+            }
+            return true;
         },
     },
 };

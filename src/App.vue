@@ -1,7 +1,7 @@
 <template>
   <header v-if="showHeader" class="app-header">
-    <div class="logo">
-      <img src="https://i1.sndcdn.com/artworks-Rtbj7kiPy5JyFzKp-fI4Iag-t500x500.jpg" alt="Logo de la aplicación">
+    <div @click="goToUserList">
+      <img class="logo" src="./assets/Logo2.png" alt="Logo de la aplicación">
     </div>
     <nav>
       <ul>
@@ -32,6 +32,11 @@ export default {
   computed: {
     showHeader() {
       return this.$route.path !== '/login' && this.$route.path !== '/register';
+    }
+  },
+  methods: {
+    goToUserList() {
+      this.$router.push('/home');
     }
   }
 }
@@ -107,7 +112,7 @@ export default {
 }
 
 .app-header .user-actions a.btn-primary {
-  background-color: salmon;
+  background-color: #b49874;
 }
 
 .app-header .user-actions a i {
@@ -124,5 +129,11 @@ export default {
   border-radius: 50%;
   object-fit: cover;
   margin-right: 10px;
+}
+
+.logo {
+  width: 90px;
+  height: 90px;
+  cursor: pointer;
 }
 </style>

@@ -13,6 +13,7 @@ import Favoritos from "./components/Favoritos.vue";
 import Buscar from "./components/Buscar.vue";
 import FAQ from "./components/PreguntasFrecuentes.vue";
 import Terminos from "./components/Terminos.vue";
+import Admin from "./components/AdminPanel.vue";
 import store from "./store";
 /* import the fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -31,7 +32,7 @@ const routes = [
     path: "/home",
     name: "UserList",
     component: UserList,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path: "/recetas/:id",
@@ -91,12 +92,20 @@ const routes = [
     component: Terminos,
     meta: { requiresAuth: false },
   },
+  {
+    path: "/Admin",
+    name: "Admin",
+    component: Admin,
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+router.push("/home");
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem("isAuthenticated");
@@ -111,8 +120,6 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
-router.push("/home");
 
 const appVue = createApp(App);
 /* add font awesome icon component */

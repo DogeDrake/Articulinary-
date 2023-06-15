@@ -2,7 +2,8 @@
     <div class="card-container">
         <div v-for="receta in recetas" :key="receta.id" class="card">
             <div class="card-header">
-                <h1 class="card-title">{{ receta.attributes.Titulo }} - En {{ receta.attributes.Tiempo }} min - Para {{ receta.attributes.Gente }} personas</h1>
+                <h1 class="card-title">{{ receta.attributes.Titulo }} - En {{ receta.attributes.Tiempo }} min - Para {{
+                    receta.attributes.Gente }} personas</h1>
                 <button @click="toggleLike(receta.id)" class="card-heart-button">
                     <span v-if="isLiked(receta.id)">
                         <i class="fas fa-heart card-icon-large" style="color: #ff0000;"></i>
@@ -30,7 +31,9 @@
                     </div>
                 </div>
             </div>
-            <router-link to="/home">Volver a Home</router-link>
+            <router-link to="/home" class="back-link">
+                <i class="fas fa-arrow-left"></i> Volver a Home
+            </router-link>
         </div>
     </div>
 </template>
@@ -179,12 +182,12 @@ export default {
 <style>
 html {
     font-family: 'Roboto', sans-serif;
-    background-color: #faebd7 ;
+    background-color: #faebd7;
     text-decoration: none;
 }
 
 .card-container {
-    background-color: #faebd7 ;
+    background-color: #faebd7;
     padding: 10px;
     box-sizing: border-box;
 }
@@ -245,7 +248,7 @@ html {
     white-space: pre-wrap;
     line-height: 25px;
     padding: 20px;
-    background-color: #faebd7 ;
+    background-color: #faebd7;
 }
 
 .router-link {
