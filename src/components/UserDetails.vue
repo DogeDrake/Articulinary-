@@ -4,7 +4,7 @@
             <div class="card-header">
                 <h1 class="card-title">{{ receta.attributes.Titulo }} - En {{ receta.attributes.Tiempo }} min - Para {{
                     receta.attributes.Gente }} personas</h1>
-                <button @click="toggleLike(receta.id)" class="card-heart-button">
+                <button @click="toggleLike(receta.id)" class="card-heart-button"  v-if="userIdLogin !== null">
                     <span v-if="isLiked(receta.id)">
                         <i class="fas fa-heart card-icon-large" style="color: #ff0000;"></i>
                     </span>
@@ -40,18 +40,19 @@
 <script>
 import axios from 'axios'
 var userIdLogin = localStorage.getItem("UserId");
-
 export default {
     data() {
         return {
             recetas: [],
             likedPosts: [], // Lista de IDs de publicaciones que han sido marcadas
-            LikedVar: null
+            LikedVar: null,
+            userIdLogin: localStorage.getItem("UserId"),
         }
     },
     created() {
         const recipeId = this.$route.params.id
         this.getRecipe(recipeId)
+        console.log("userIdLogin:", this.userIdLogin);
     },
     methods: {
         toggleLike(postId) {

@@ -38,7 +38,7 @@ const routes = [
     path: "/recetas/:id",
     name: "UserDetails",
     component: UserDetails,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path: "/login",
@@ -72,7 +72,7 @@ const routes = [
     path: "/buscar",
     name: "Buscar",
     component: Buscar,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path: "/editar",
@@ -105,11 +105,8 @@ const router = createRouter({
   routes,
 });
 
-router.push("/home");
-
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem("isAuthenticated");
-
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
       next({ name: "Login" });
@@ -126,4 +123,5 @@ const appVue = createApp(App);
 appVue.component("font-awesome-icon", FontAwesomeIcon);
 appVue.use(router);
 appVue.use(store);
+
 appVue.mount("#app");

@@ -73,7 +73,7 @@
 
 <script>
 import axios from "axios";
-
+var userIdLogin = localStorage.getItem("UserId");
 export default {
     data() {
         return {
@@ -86,6 +86,7 @@ export default {
         };
     },
     mounted() {
+        //console.log(userIdLogin.toString())
         axios
             .get("http://localhost:1337/api/Recetas", {
                 params: {

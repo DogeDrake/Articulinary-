@@ -26,7 +26,9 @@
                 <button @click.prevent="login">Log In</button>
                 <span class="error-message" v-if="errorMessage">{{ errorMessage }}</span>
             </form>
-            <p>No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link></p>
+            <a>No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link></a>
+            <a>o</a>
+            <a><router-link to="/home">Entrar como invitado</router-link></a>
         </div>
 
 
@@ -73,6 +75,10 @@ export default {
     },
     methods: {
         ...mapMutations(['setUserId']),
+        loginAsGuest() {
+            // Realizar cualquier lógica necesaria antes de redirigir al usuario
+            this.$router.push('/home');
+        },
         login() {
             let correo = document.getElementById("email").value;
             let contrasena = document.getElementById("password").value;
@@ -207,8 +213,9 @@ export default {
 .error-message {
     color: red;
 }
-.inline{
-    display:inline-block;
+
+.inline {
+    display: inline-block;
 }
 </style>
 
