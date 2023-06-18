@@ -127,12 +127,6 @@ background-color: rgba(0, 0, 255, 0.397);
 
 }
 
-
-.login-container::before {
-  background-color: blue; /* Cambia el tono de fondo a azul */
-  opacity: 0.5; /* Ajusta la opacidad del color de fondo */
-}
-
 .login-form {
     display: flex;
     flex-direction: column;
