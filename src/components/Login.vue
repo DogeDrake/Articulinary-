@@ -120,9 +120,17 @@ export default {
     align-items: center;
     height: 100vh;
     overflow-y: hidden;
-    background-color: #faebd7;
+    background-image: url('../assets/kitchenbackground.png');
+    background-size: cover;
+  background-position: center;
+background-color: rgba(0, 0, 255, 0.397);
+
+}
 
 
+.login-container::before {
+  background-color: blue; /* Cambia el tono de fondo a azul */
+  opacity: 0.5; /* Ajusta la opacidad del color de fondo */
 }
 
 .login-form {
