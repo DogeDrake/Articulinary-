@@ -86,6 +86,19 @@
                 </div>
             </div>
         </div>
+        <!-- Delete Account Modal -->
+        <div v-if="showDeleteAccountModal" class="modal">
+            <div class="modal-content">
+                <h3>¿Estás seguro de que quieres eliminar tu cuenta?</h3>
+                <p>Si eliminas tu cuenta, no podrás volver a acceder y se borrarán todas tus recetas.</p>
+                <div class="modal-buttons">
+                    <button @click="confirmDeleteAccount" class="delete-button">Sí</button>
+                    <button @click="cancelDeleteAccount" class="cancel-button">No</button>
+                </div>
+                <p>Si tienes alguna duda, consulta con <a
+                        href="mailto:moderation@articulinary.com">moderation@articulinary.com</a>.</p>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -115,6 +128,7 @@ export default {
             profileImage: null,
             profileImageUrl: null,
             showOptions: false, // Nueva propiedad
+            showDeleteAccountModal: false,
         }
     },
     methods: {
@@ -168,7 +182,13 @@ export default {
         toggleOptions() {
             this.showOptions = !this.showOptions;
         },
+        cancelDeleteAccount() {
+            this.showDeleteAccountModal = false;
+        },
         deleteAccount() {
+            this.showDeleteAccountModal = true;
+        },
+        confirmDeleteAccount() {
             // Eliminar todas las recetas del usuario
             this.user.recetas.forEach(receta => {
                 axios.delete(`http://localhost:1337/api/Recetas/${receta.id}`)
@@ -190,6 +210,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                 });
+                this.showDeleteAccountModal = false;
         },
         openEditModal() {
             this.editUsername = this.user.username;
