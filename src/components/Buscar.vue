@@ -138,8 +138,8 @@ export default {
             this.glutenFree = false;
             this.lactoseFree = false;
             this.lowSugar = false;
-
-            this.applyFilters();
+            this.applySearchFilters();
+            this.filterApplied = false;
         },
     },
     mounted() {

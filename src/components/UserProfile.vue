@@ -1,4 +1,12 @@
 <template>
+    <div class="user-actions">
+        <div class="options-button" @click="toggleOptions">
+            <i class="fas fa-ellipsis-v"></i>
+        </div>
+        <div v-if="showOptions" class="options-dropdown">
+            <button @click="deleteAccount" class="delete-account-button">Borrar cuenta</button>
+        </div>
+    </div>
     <div class="user-profile">
         <div class="user-info">
             <div class="user-header">
@@ -20,7 +28,7 @@
 
                 <button v-if="isAdmin" class="admin-button">
                     <router-link to="/Admin" class="back-link">
-                    <i class="fas fa-cog"></i> Panel de Administrador
+                        <i class="fas fa-cog"></i> Panel de Administrador
                     </router-link>
                 </button>
             </div>
@@ -106,6 +114,7 @@ export default {
             RealName: '',
             profileImage: null,
             profileImageUrl: null,
+            showOptions: false, // Nueva propiedad
         }
     },
     methods: {
@@ -155,6 +164,32 @@ export default {
                         console.log(error);
                     });
             }
+        },
+        toggleOptions() {
+            this.showOptions = !this.showOptions;
+        },
+        deleteAccount() {
+            // Eliminar todas las recetas del usuario
+            this.user.recetas.forEach(receta => {
+                axios.delete(`http://localhost:1337/api/Recetas/${receta.id}`)
+                    .then(response => {
+                        console.log("Receta eliminada:", response.data);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            });
+
+            // Realizar la solicitud de eliminación de la cuenta usando Axios y el ID del usuario
+            axios.delete(`http://localhost:1337/api/Users/${this.user.id}`)
+                .then(response => {
+                    console.log("Cuenta eliminada:", response.data);
+                    // Cerrar sesión
+                    this.logout();
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
         openEditModal() {
             this.editUsername = this.user.username;
@@ -452,11 +487,11 @@ export default {
 }
 
 .button-group {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
-.admin-button{
+.admin-button {
     margin-left: 10px;
     background-color: blue;
     color: #fff;
@@ -466,5 +501,53 @@ export default {
     cursor: pointer;
     display: flex;
     align-items: center;
+}
+
+.user-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.options-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #808080;
+    font-size: 1.5rem;
+    margin-right: 10px;
+    margin-top: 150px;
+}
+
+.options-dropdown {
+    position: absolute;
+    margin-top: 150px;
+    top: 30px;
+    right: 0;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+    z-index: 999;
+}
+
+.options-dropdown button {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.options-dropdown button:hover {
+    background-color: #cc0000;
 }
 </style>
